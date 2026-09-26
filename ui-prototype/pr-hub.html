@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pull Requests Hub · GitHub Project Control</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link" href="index.html">Launcher</a>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="settings-filters.html">Settings</a>
+        <a class="nav-link active" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <a class="btn btn-primary" href="workflow-alerts.html">Review workflow alerts</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="prhub-header">
+      <p class="eyebrow">pull requests hub</p>
+      <h1>Dependabot-first queue with urgent conflicts and failed checks at the top.</h1>
+      <p class="lead">Use creator and sort controls to triage all repositories in one place, then execute merge actions without leaving the hub.</p>
+
+      <div class="toolbar" style="margin-top: var(--space-6);">
+        <div class="field">
+          <label class="label" for="creator-filter">Creator filter</label>
+          <select id="creator-filter">
+            <option value="dependabot" selected>Dependabot</option>
+            <option value="all">All creators</option>
+            <option value="me">Only me</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="sort-filter">Sort order</label>
+          <select id="sort-filter">
+            <option value="urgent" selected>Most urgent first</option>
+            <option value="updated">Recently updated first</option>
+            <option value="created">Recently created first</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="pr-list" style="margin-top: var(--space-8);">
+      <div class="card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>PR</th>
+              <th>Repository</th>
+              <th>Creator</th>
+              <th>Status</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pr-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="merge-panel" style="margin-top: var(--space-8);">
+      <div class="card card-muted">
+        <div class="row-between">
+          <div>
+            <h3 id="selected-title">Select a PR row to enable merge controls.</h3>
+            <p class="label" id="selected-meta">No PR selected.</p>
+          </div>
+          <div class="row">
+            <button class="btn" id="open-pr" disabled>Open on GitHub</button>
+            <button class="btn btn-primary" id="merge-pr" disabled>Merge selected PR</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Default route: Dependabot + urgent-first sorting.</span>
+      <span><a href="settings-filters.html">Adjust defaults in Settings →</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const key = "project-control-settings";
+    const prData = [
+      { title: "Bump actions/setup-node from 4 to 5", repo: "org/frontend-app", creator: "dependabot", status: "Failed checks", urgency: 5, updated: "2026-06-06 11:08", created: "2026-06-05 17:41", url: "#" },
+      { title: "Bump lodash from 4.17.20 to 4.17.21", repo: "personal/notebook-api", creator: "dependabot", status: "Merge conflict", urgency: 5, updated: "2026-06-06 09:16", created: "2026-06-05 08:22", url: "#" },
+      { title: "Refactor repo cache invalidation path", repo: "org/payments-service", creator: "me", status: "Needs review", urgency: 3, updated: "2026-06-06 10:02", created: "2026-06-03 09:40", url: "#" },
+      { title: "Bump eslint from 9.4.0 to 9.5.0", repo: "oss/cache-layer", creator: "dependabot", status: "Ready to merge", urgency: 2, updated: "2026-06-05 22:19", created: "2026-06-05 21:12", url: "#" },
+      { title: "Improve dashboard loading placeholders", repo: "org/frontend-app", creator: "me", status: "Checks running", urgency: 1, updated: "2026-06-06 11:35", created: "2026-06-06 11:20", url: "#" }
+    ];
+
+    const tableBody = document.getElementById("pr-table");
+    const creatorFilter = document.getElementById("creator-filter");
+    const sortFilter = document.getElementById("sort-filter");
+    const selectedTitle = document.getElementById("selected-title");
+    const selectedMeta = document.getElementById("selected-meta");
+    const openBtn = document.getElementById("open-pr");
+    const mergeBtn = document.getElementById("merge-pr");
+    let selected = null;
+
+    function readDefaults() {
+      try {
+        const settings = JSON.parse(localStorage.getItem(key) || "{}");
+        if (settings.creator) creatorFilter.value = settings.creator;
+        if (settings.sort) sortFilter.value = settings.sort;
+      } catch {
+        creatorFilter.value = "dependabot";
+        sortFilter.value = "urgent";
+      }
+    }
+
+    function renderRows() {
+      const creator = creatorFilter.value;
+      const sortMode = sortFilter.value;
+      const filtered = prData.filter((item) => creator === "all" || item.creator === creator);
+      const sorted = [...filtered].sort((a, b) => {
+        if (sortMode === "urgent") return b.urgency - a.urgency;
+        if (sortMode === "updated") return b.updated.localeCompare(a.updated);
+        return b.created.localeCompare(a.created);
+      });
+
+      tableBody.innerHTML = "";
+      if (!sorted.length) {
+        tableBody.innerHTML = "<tr><td colspan='6' class='empty'>No pull requests in this filter.</td></tr>";
+        return;
+      }
+
+      sorted.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.title}</td>
+          <td class="mono">${item.repo}</td>
+          <td>${item.creator}</td>
+          <td>${item.status}</td>
+          <td class="mono">${item.updated}</td>
+          <td><button class="btn" type="button" data-index="${index}">Select</button></td>
+        `;
+        row.querySelector("button").addEventListener("click", () => {
+          selected = item;
+          selectedTitle.textContent = item.title;
+          selectedMeta.textContent = `${item.repo} · ${item.status} · ${item.updated}`;
+          openBtn.disabled = false;
+          mergeBtn.disabled = item.status === "Merge conflict" || item.status === "Failed checks";
+        });
+        tableBody.appendChild(row);
+      });
+    }
+
+    openBtn.addEventListener("click", () => {
+      if (!selected) return;
+      window.alert(`Open PR: ${selected.title}`);
+    });
+
+    mergeBtn.addEventListener("click", () => {
+      if (!selected) return;
+      selected.status = "Merged";
+      selected.urgency = 0;
+      selectedTitle.textContent = `${selected.title} (merged)`;
+      selectedMeta.textContent = `${selected.repo} · merged in-app`;
+      mergeBtn.disabled = true;
+      renderRows();
+    });
+
+    creatorFilter.addEventListener("change", renderRows);
+    sortFilter.addEventListener("change", renderRows);
+
+    readDefaults();
+    renderRows();
+  </script>
+  <script src="theme.js"></script>
+</body>
+</html>

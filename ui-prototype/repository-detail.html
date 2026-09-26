@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Repository Detail · GitHub Project Control</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link" href="index.html">Launcher</a>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="settings-filters.html">Settings</a>
+        <a class="nav-link" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link active" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <a class="btn" href="dashboard.html">All repos</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="repo-hero">
+      <p class="eyebrow">repository detail</p>
+      <h1>org/frontend-app</h1>
+      <p class="lead">Central health view for PR velocity, issue pressure, and workflow reliability on the default branch.</p>
+    </section>
+
+    <section class="container" data-od-id="repo-summary" style="margin-top: var(--space-8);">
+      <div class="grid-4">
+        <div class="card metric"><span class="value">3</span><span class="label">Open pull requests</span></div>
+        <div class="card metric"><span class="value">7</span><span class="label">Open issues</span></div>
+        <div class="card metric"><span class="value">2</span><span class="label">Failing workflows</span></div>
+        <div class="card metric"><span class="value">2026-06-06 09:12</span><span class="label">Latest commit on main</span></div>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="repo-tabs" style="margin-top: var(--space-8);">
+      <div class="row" role="tablist" aria-label="repo detail tabs">
+        <button class="btn btn-primary" data-tab="prs" type="button">PR queue</button>
+        <button class="btn" data-tab="issues" type="button">Issues</button>
+        <button class="btn" data-tab="workflows" type="button">Workflow runs</button>
+      </div>
+
+      <div class="card" id="panel-prs" style="margin-top: var(--space-4);">
+        <table class="table">
+          <thead><tr><th>PR</th><th>Status</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr><td>Bump actions/setup-node from 4 to 5</td><td><span class="pill pill--danger">Failed checks</span></td><td class="mono">2026-06-06 11:08</td></tr>
+            <tr><td>Improve dashboard loading placeholders</td><td><span class="pill pill--ok">Checks running</span></td><td class="mono">2026-06-06 11:35</td></tr>
+            <tr><td>Add branch rule sync automation</td><td><span class="pill pill--warn">Needs review</span></td><td class="mono">2026-06-05 18:46</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" id="panel-issues" style="display:none; margin-top: var(--space-4);">
+        <table class="table">
+          <thead><tr><th>Issue</th><th>Priority</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr><td>Search results jump on mobile breakpoint</td><td><span class="pill pill--warn">P1</span></td><td class="mono">2026-06-06 08:31</td></tr>
+            <tr><td>Team filter not persisted</td><td><span class="pill">P2</span></td><td class="mono">2026-06-05 22:02</td></tr>
+            <tr><td>Workflow card should show flaky rate</td><td><span class="pill">P3</span></td><td class="mono">2026-06-04 19:10</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" id="panel-workflows" style="display:none; margin-top: var(--space-4);">
+        <table class="table">
+          <thead><tr><th>Workflow</th><th>Result</th><th>Last run</th></tr></thead>
+          <tbody>
+            <tr><td>CI / unit-tests</td><td><span class="pill pill--danger">Failed</span></td><td class="mono">2026-06-06 11:20</td></tr>
+            <tr><td>E2E / smoke</td><td><span class="pill pill--warn">Flaky</span></td><td class="mono">2026-06-06 10:04</td></tr>
+            <tr><td>Deploy / preview</td><td><span class="pill pill--ok">Passing</span></td><td class="mono">2026-06-06 09:54</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Repository detail links back to global PR and workflow hubs.</span>
+      <span><a href="pr-hub.html">Open PR Hub →</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const tabButtons = Array.from(document.querySelectorAll("[data-tab]"));
+    const panels = {
+      prs: document.getElementById("panel-prs"),
+      issues: document.getElementById("panel-issues"),
+      workflows: document.getElementById("panel-workflows")
+    };
+
+    function activate(tab) {
+      Object.entries(panels).forEach(([key, panel]) => {
+        panel.style.display = key === tab ? "block" : "none";
+      });
+      tabButtons.forEach((button) => {
+        const isActive = button.dataset.tab === tab;
+        button.classList.toggle("btn-primary", isActive);
+      });
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => activate(button.dataset.tab));
+    });
+  </script>
+  <script src="theme.js"></script>
+</body>
+</html>

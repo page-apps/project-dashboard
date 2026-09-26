@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings & Filters · GitHub Project Control</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link" href="index.html">Launcher</a>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="settings-filters.html">Settings</a>
+        <a class="nav-link" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <a class="btn" href="dashboard.html">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="settings-header">
+      <p class="eyebrow">settings / filters</p>
+      <h1>Tune default triage behavior for pull requests and alerts.</h1>
+      <p class="lead">These settings persist in local storage so this prototype behaves like a real product surface while you evaluate sorting and focus defaults.</p>
+    </section>
+
+    <section class="container" data-od-id="settings-panels" style="margin-top: var(--space-8);">
+      <div class="grid-2">
+        <form class="card stack" id="settings-form" style="gap: var(--space-4);">
+          <div class="field">
+            <label class="label" for="default-creator">Default creator filter</label>
+            <select id="default-creator">
+              <option value="dependabot" selected>Dependabot</option>
+              <option value="all">All creators</option>
+              <option value="self">Only me</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="sort-order">PR sort order</label>
+            <select id="sort-order">
+              <option value="urgent" selected>Most urgent first</option>
+              <option value="updated">Recently updated</option>
+              <option value="created">Recently created</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="repo-scope">Repository scope</label>
+            <select id="repo-scope">
+              <option value="all" selected>My + org + contributing repos</option>
+              <option value="my">Only my repos</option>
+              <option value="org">Only org repos</option>
+              <option value="contrib">Only contributing repos</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="alert-threshold">Workflow alert threshold</label>
+            <select id="alert-threshold">
+              <option value="failed" selected>Only failed jobs</option>
+              <option value="warn">Failed + flaky jobs</option>
+              <option value="all">All non-success jobs</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary" type="submit">Save settings</button>
+            <button class="btn" type="button" id="reset-settings">Reset defaults</button>
+          </div>
+        </form>
+
+        <div class="card card-muted stack" style="gap: var(--space-4);">
+          <h3>Current profile</h3>
+          <div class="metric">
+            <span class="label">PR hub default</span>
+            <span class="value mono" id="profile-pr-focus">dependabot</span>
+          </div>
+          <div class="metric">
+            <span class="label">Sort order</span>
+            <span class="value mono" id="profile-sort">urgent</span>
+          </div>
+          <div class="metric">
+            <span class="label">Repo scope</span>
+            <span class="value mono" id="profile-scope">all</span>
+          </div>
+          <div class="metric">
+            <span class="label">Workflow threshold</span>
+            <span class="value mono" id="profile-threshold">failed</span>
+          </div>
+          <p class="label">Saved profile feeds directly into the PR Hub and workflow screens.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Saved settings apply immediately to this prototype.</span>
+      <span><a href="pr-hub.html">Open PR Hub with profile →</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const key = "project-control-settings";
+    const defaults = {
+      creator: "dependabot",
+      sort: "urgent",
+      scope: "all",
+      threshold: "failed"
+    };
+
+    const form = document.getElementById("settings-form");
+    const creator = document.getElementById("default-creator");
+    const sort = document.getElementById("sort-order");
+    const scope = document.getElementById("repo-scope");
+    const threshold = document.getElementById("alert-threshold");
+
+    const profileFields = {
+      creator: document.getElementById("profile-pr-focus"),
+      sort: document.getElementById("profile-sort"),
+      scope: document.getElementById("profile-scope"),
+      threshold: document.getElementById("profile-threshold")
+    };
+
+    function readSettings() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(key) || "{}");
+        return { ...defaults, ...parsed };
+      } catch {
+        return defaults;
+      }
+    }
+
+    function apply(settings) {
+      creator.value = settings.creator;
+      sort.value = settings.sort;
+      scope.value = settings.scope;
+      threshold.value = settings.threshold;
+      profileFields.creator.textContent = settings.creator;
+      profileFields.sort.textContent = settings.sort;
+      profileFields.scope.textContent = settings.scope;
+      profileFields.threshold.textContent = settings.threshold;
+    }
+
+    apply(readSettings());
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const next = {
+        creator: creator.value,
+        sort: sort.value,
+        scope: scope.value,
+        threshold: threshold.value
+      };
+      localStorage.setItem(key, JSON.stringify(next));
+      apply(next);
+    });
+
+    document.getElementById("reset-settings").addEventListener("click", () => {
+      localStorage.setItem(key, JSON.stringify(defaults));
+      apply(defaults);
+    });
+  </script>
+  <script src="theme.js"></script>
+</body>
+</html>

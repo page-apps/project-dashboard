@@ -1,0 +1,72 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GitHub Project Control · Prototype Launcher</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link active" href="index.html">Launcher</a>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="settings-filters.html">Settings</a>
+        <a class="nav-link" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <button class="btn btn-primary">Connect GitHub</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="hero">
+      <p class="eyebrow">responsive web prototype</p>
+      <h1>Manage personal and org GitHub work from one operational surface.</h1>
+      <p class="lead">This prototype includes dedicated screens for repo attention, PR triage, workflow failures, and repository-level detail. Start with Dashboard, then jump into the PR hub for Dependabot-first urgent merges.</p>
+    </section>
+
+    <section class="container" data-od-id="screen-cards" style="margin-top: var(--space-12);">
+      <div class="grid-3">
+        <a class="card" href="dashboard.html">
+          <p class="eyebrow">screen 01</p>
+          <h3>Dashboard</h3>
+          <p class="label">My repos, org repos, contributing repos, and attention signals.</p>
+        </a>
+        <a class="card" href="settings-filters.html">
+          <p class="eyebrow">screen 02</p>
+          <h3>Settings / Filters</h3>
+          <p class="label">Creator filter defaults, urgency behavior, and scope controls.</p>
+        </a>
+        <a class="card" href="pr-hub.html">
+          <p class="eyebrow">screen 03</p>
+          <h3>Pull Requests Hub</h3>
+          <p class="label">Dependabot default focus, urgent-first sort, and merge controls.</p>
+        </a>
+        <a class="card" href="workflow-alerts.html">
+          <p class="eyebrow">screen 04</p>
+          <h3>Workflow Alerts</h3>
+          <p class="label">Failed builds and conflicting checks across all repositories.</p>
+        </a>
+        <a class="card" href="repository-detail.html">
+          <p class="eyebrow">screen 05</p>
+          <h3>Repository Detail</h3>
+          <p class="label">Focused repo view with branch health, PR queue, and issue load.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Prototype scope: responsive web · 5 screens</span>
+      <span>Audience: product evaluators</span>
+    </div>
+  </footer>
+  <script src="theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workflow Alerts · GitHub Project Control</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link" href="index.html">Launcher</a>
+        <a class="nav-link" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="settings-filters.html">Settings</a>
+        <a class="nav-link" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link active" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <a class="btn" href="dashboard.html">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="workflow-header">
+      <p class="eyebrow">workflow alerts</p>
+      <h1>Track failing, flaky, and queued pipelines across all tracked repositories.</h1>
+      <p class="lead">Prioritize breakages first, then move to warning-level flaky runs before they block merge flow.</p>
+      <div class="toolbar" style="margin-top: var(--space-6);">
+        <div class="field">
+          <label class="label" for="workflow-level">Alert level</label>
+          <select id="workflow-level">
+            <option value="all">All alerts</option>
+            <option value="failed">Failed only</option>
+            <option value="warn">Warnings only</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="workflow-list" style="margin-top: var(--space-8);">
+      <div class="card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Repository</th>
+              <th>Workflow</th>
+              <th>Branch</th>
+              <th>Status</th>
+              <th>Last run</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="workflow-table"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Workflow focus feeds PR urgency ranking.</span>
+      <span><a href="pr-hub.html">Open PR Hub triage →</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const workflowRows = [
+      { repo: "org/frontend-app", workflow: "CI / unit-tests", branch: "main", status: "failed", last: "2026-06-06 11:20" },
+      { repo: "org/payments-service", workflow: "Deploy / staging", branch: "release", status: "failed", last: "2026-06-06 10:51" },
+      { repo: "personal/notebook-api", workflow: "Dependabot auto-merge check", branch: "dependabot/npm_and_yarn/lodash", status: "warn", last: "2026-06-06 09:17" },
+      { repo: "oss/cache-layer", workflow: "Integration matrix", branch: "main", status: "warn", last: "2026-06-05 23:06" }
+    ];
+
+    const level = document.getElementById("workflow-level");
+    const table = document.getElementById("workflow-table");
+
+    function statusPill(status) {
+      if (status === "failed") return "<span class='pill pill--danger'>Failed</span>";
+      if (status === "warn") return "<span class='pill pill--warn'>Warning</span>";
+      return "<span class='pill pill--ok'>Passing</span>";
+    }
+
+    function render() {
+      const filter = level.value;
+      const rows = workflowRows.filter((entry) => filter === "all" || entry.status === filter);
+      table.innerHTML = "";
+      if (!rows.length) {
+        table.innerHTML = "<tr><td colspan='6' class='empty'>No workflows match this filter.</td></tr>";
+        return;
+      }
+      rows.forEach((entry) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="mono">${entry.repo}</td>
+          <td>${entry.workflow}</td>
+          <td class="mono">${entry.branch}</td>
+          <td>${statusPill(entry.status)}</td>
+          <td class="mono">${entry.last}</td>
+          <td><button class="btn" type="button">Open run</button></td>
+        `;
+        tr.querySelector("button").addEventListener("click", () => {
+          window.alert(`Open workflow run for ${entry.repo}`);
+        });
+        table.appendChild(tr);
+      });
+    }
+
+    level.addEventListener("change", render);
+    render();
+  </script>
+  <script src="theme.js"></script>
+</body>
+</html>

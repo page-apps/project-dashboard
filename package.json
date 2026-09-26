@@ -1,0 +1,44 @@
+{
+  "name": "@repo-apps/project-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.20.0",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "vite --config apps/web/vite.config.ts",
+    "build": "pnpm typecheck && vite build --config apps/web/vite.config.ts",
+    "preview": "vite preview --config apps/web/vite.config.ts --host 127.0.0.1 --port 4173",
+    "framework:build": "pnpm --filter @repo-apps/runtime build && pnpm --filter @repo-apps/credentials build && pnpm --filter @repo-apps/ui build && pnpm --filter @repo-apps/authorized-github build",
+    "typecheck": "pnpm framework:build && tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --config apps/web/vite.config.ts",
+    "test:e2e": "playwright test --config playwright.config.ts"
+  },
+  "dependencies": {
+    "@repo-apps/authorized-github": "workspace:*",
+    "@repo-apps/credentials": "workspace:*",
+    "@repo-apps/runtime": "workspace:*",
+    "@repo-apps/ui": "workspace:*",
+    "@tanstack/react-query": "^5.80.7",
+    "pino": "^10.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2",
+    "workbox-window": "^7.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/node": "^26.2.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "jsdom": "^29.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.0.16",
+    "vite-plugin-pwa": "^1.0.1",
+    "vitest": "4.1.9"
+  }
+}

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard · GitHub Project Control</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <header class="topnav" data-od-id="topnav">
+    <div class="container topnav-inner">
+      <span class="logo">Project Control</span>
+      <nav>
+        <a class="nav-link" href="index.html">Launcher</a>
+        <a class="nav-link active" href="dashboard.html">Dashboard</a>
+        <a class="nav-link" href="settings-filters.html">Settings</a>
+        <a class="nav-link" href="pr-hub.html">PR Hub</a>
+        <a class="nav-link" href="workflow-alerts.html">Workflows</a>
+        <a class="nav-link" href="repository-detail.html">Repo Detail</a>
+      </nav>
+      <a class="btn" href="pr-hub.html">Open PR Hub</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="container" data-od-id="dashboard-header">
+      <div class="row-between">
+        <div>
+          <p class="eyebrow">dashboard</p>
+          <h1>Repo attention across personal, org, and contributing projects.</h1>
+        </div>
+      </div>
+      <div class="toolbar" style="margin-top: var(--space-6);">
+        <div class="field">
+          <label class="label" for="repo-search">Search repository</label>
+          <input id="repo-search" type="search" placeholder="repo name…" />
+        </div>
+        <div class="field">
+          <label class="label" for="repo-group">Group</label>
+          <select id="repo-group">
+            <option value="all">All groups</option>
+            <option value="my">My repos</option>
+            <option value="org">Org repos</option>
+            <option value="contrib">Contributing repos</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="dashboard-metrics" style="margin-top: var(--space-8);">
+      <div class="grid-4">
+        <div class="card metric"><span class="value">9</span><span class="label">Open PRs needing review</span></div>
+        <div class="card metric"><span class="value">4</span><span class="label">Failing workflows</span></div>
+        <div class="card metric"><span class="value">11</span><span class="label">Open issues assigned</span></div>
+        <div class="card metric"><span class="value">3</span><span class="label">Merge conflicts detected</span></div>
+      </div>
+    </section>
+
+    <section class="container" data-od-id="repo-table" style="margin-top: var(--space-8);">
+      <div class="card">
+        <table class="table" id="repo-table-body">
+          <thead>
+            <tr>
+              <th>Repository</th>
+              <th>Group</th>
+              <th>Latest commit</th>
+              <th>Open PRs</th>
+              <th>Open issues</th>
+              <th>Workflow</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-group="my">
+              <td><a href="repository-detail.html">personal/notebook-api</a></td>
+              <td>My repo</td>
+              <td class="mono">2026-06-06 10:42</td>
+              <td class="mono">2</td>
+              <td class="mono">5</td>
+              <td><span class="pill pill--warn">Last build failed</span></td>
+            </tr>
+            <tr data-group="org">
+              <td><a href="repository-detail.html">org/payments-service</a></td>
+              <td>Org repo</td>
+              <td class="mono">2026-06-05 21:16</td>
+              <td class="mono">3</td>
+              <td class="mono">8</td>
+              <td><span class="pill pill--danger">Conflict in default branch</span></td>
+            </tr>
+            <tr data-group="contrib">
+              <td><a href="repository-detail.html">oss/cache-layer</a></td>
+              <td>Contributing</td>
+              <td class="mono">2026-06-04 08:03</td>
+              <td class="mono">1</td>
+              <td class="mono">2</td>
+              <td><span class="pill pill--ok">Checks passing</span></td>
+            </tr>
+            <tr data-group="org">
+              <td><a href="repository-detail.html">org/frontend-app</a></td>
+              <td>Org repo</td>
+              <td class="mono">2026-06-06 09:12</td>
+              <td class="mono">3</td>
+              <td class="mono">7</td>
+              <td><span class="pill pill--warn">1 flaky workflow</span></td>
+            </tr>
+            <tr data-group="my">
+              <td><a href="repository-detail.html">personal/cli-tools</a></td>
+              <td>My repo</td>
+              <td class="mono">2026-06-03 19:47</td>
+              <td class="mono">0</td>
+              <td class="mono">1</td>
+              <td><span class="pill">No alerts</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pagefoot" data-od-id="footer">
+    <div class="container row-between">
+      <span>Tip: open PR Hub to merge Dependabot updates in one flow.</span>
+      <span><a href="pr-hub.html">Go to PR Hub →</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const repoSearch = document.getElementById("repo-search");
+    const repoGroup = document.getElementById("repo-group");
+    const rows = Array.from(document.querySelectorAll("#repo-table-body tbody tr"));
+
+    function filterRows() {
+      const term = repoSearch.value.trim().toLowerCase();
+      const group = repoGroup.value;
+      rows.forEach((row) => {
+        const matchesTerm = row.textContent.toLowerCase().includes(term);
+        const matchesGroup = group === "all" || row.dataset.group === group;
+        row.style.display = matchesTerm && matchesGroup ? "" : "none";
+      });
+    }
+
+    repoSearch.addEventListener("input", filterRows);
+    repoGroup.addEventListener("change", filterRows);
+  </script>
+  <script src="theme.js"></script>
+  <script src="theme.js"></script>
+</body>
+</html>
